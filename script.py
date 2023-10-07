@@ -12,7 +12,7 @@ if upload is not None:
 	st.write(upload_df)
 
 
-options=["OD","ITEMS"]
+options=["OD"]
 
 option = st.selectbox(
     'Which csv are you uploading?',
@@ -22,8 +22,9 @@ option = st.selectbox(
 
 
 if upload is not None :
-	if option=="OD"
+	if option=="OD":
 		csv= helpers.CSV_OD(upload_df)
+
 	csv.process()
 	st.download_button(
 	   "Press to Download",
