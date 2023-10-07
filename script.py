@@ -1,50 +1,33 @@
 import streamlit as st
 import pandas as pd
-# import helpers.py as helpers
+import helpers as helpers
 
 st.markdown("# Main page 🎈")
 st.sidebar.markdown("# Main page 🎈")
 
+upload = st.file_uploader("upload file", type={"csv"})
+
+if upload is not None:
+	upload_df = pd.read_csv(upload)
+	st.write(upload_df)
 
 
-spectra = st.file_uploader("upload file", type={"csv"})
-
-# def modify_OD(df) :
-# 	df2 = df.iloc[:,0]
-# 	return df2
-
-if spectra is not None:
-	spectra_df = pd.read_csv(spectra)
-	st.write(spectra_df)
-	
-	
-
-
-df = pd.DataFrame({
-    'first column': ["OD", "ITEMS"],
-    })
+options=["OD","ITEMS"]
 
 option = st.selectbox(
     'Which csv are you uploading?',
-     df['first column'])
+     options)
 
 'You selected: ', option
 
 
-
-
-if spectra is not None and option=="OD":
-
-	selected_column= modify_OD(spectra_df)
-
-	def convert_df(df):
-   		return df.to_csv(index=False).encode('utf-8')
-
-	csv = convert_df(selected_column) 
-
+if upload is not None :
+	if option=="OD"
+		csv= helpers.CSV_OD(upload_df)
+	csv.process()
 	st.download_button(
 	   "Press to Download",
-	   csv,
+	   csv.export(),
 	   "file.csv",
 	   "text/csv",
 	   key='download-csv'
