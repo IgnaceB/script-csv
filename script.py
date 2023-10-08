@@ -22,6 +22,7 @@ option = st.selectbox(
      options)
 
 
+
 if upload is not None :
 	if option=="Import des comptes":
 		
@@ -33,17 +34,19 @@ if upload is not None :
 			st.write(model)
 		
 			if document :
+				
 				st.download_button(
 				   "Press to Download",
 				   csv.export(),
 				   f"{document}.csv",
 				   "text/csv",
-				   key='download-csv'
+				   key='download-csv', 
 				)
 			else : 
 				st.warning("Veuillez entrer un numéro de document")
 		except Exception as e :
-			st.warning("mauvais format de csv, veuillez vous référez au modèle ci-dessous")
+			print(e)
+			st.warning(f"mauvais format de csv (erreur : {e}), veuillez vous référez au modèle ci-dessous")
 			st.write(helpers.CSV_OD(upload_df).model())
 
 		
