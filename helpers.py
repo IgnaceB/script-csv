@@ -15,7 +15,7 @@ class CSV :
 	def model(self):
 		pass
 	def export(self):
-		return self.df.to_csv(index=False, sep=';').encode('utf-8')
+		return self.df.to_csv(index=False, sep=';').encode('latin-1')
 
 class CSV_OD(CSV) :
 	def model(self) :
