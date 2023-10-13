@@ -75,12 +75,20 @@ class CSV_OD(CSV) :
 		
 		# transforme les valeurs avec le dictionnaire data.json et stock dans transformed_dict key=rows
 		for key, value_list in dict_analitique.items() :
-			transformed_list=[self.match_element(element, jsonData) for element in value_list]
-			transformed_dict[key] = transformed_list
+			transformed_object={f'"{self.match_element(element, jsonData)}"' : 100.00 for element in value_list }
+
+			transformed_dict[key] = transformed_object
+			
 	
 		# insert les valeurs dans le model sur base de key=rows du transformed_dict
 		for key, values in transformed_dict.items() :
-			model_df.at[key,'Analitique']=values
+		# transforme les '' en ""
+			my_updated_string = re.sub(r"'", '', str(values))
+
+			model_df.at[key,'Analitique']=my_updated_string
+
+		
+
 
 		# change le dataframe de l'object pour le dataframe du modèle
 		self.df=model_df
