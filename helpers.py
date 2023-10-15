@@ -33,14 +33,15 @@ class CSV_XML(CSV) :
 class CSV_OD(CSV) :
 	# definit le modele du document final
 	def model(self) :
-		d = {'Document':[""],
-		 'Date de calcul':[""],
-		 'Numéro de référence':[""],
-		 'Analitique':[""],
-		 'Numéro de compte':[""],
-		 'Libellé du compte':[""],
-		 'Débit':[""],
-		 'Crédit':[""],
+		d = {'Numéro':[""],
+		 'Référence':[""],
+		 'Date':[""],
+		 'Ecriture comptable / Compte':[""],
+		 'Ecriture comptable / libellé':[""],
+		 'Ecriture comptable / Débit':[""],
+		 'Ecriture comptable / Crédit':[""],
+		 'Ecriture comptable / Lignes analytiques / Compte analytique':[""],
+
 		 }
 		df = pd.DataFrame(data=d, index=[0])
 		return df
@@ -67,10 +68,10 @@ class CSV_OD(CSV) :
 		model_df.loc[0] = [input,self.df.at[0,'Date de calcul'],self.df.at[0,'Numéro de référence'],None,None,None,None,None]
 		
 		# définis les champs copié/collé des autres lignes
-		model_df.loc[:,'Numéro de compte'] = self.df.loc[:,'Numéro de compte']
-		model_df.loc[:,'Libellé du compte'] = self.df.loc[:,'Libellé du compte']
-		model_df.loc[:,'Débit'] = self.df.loc[:,'Débit']
-		model_df.loc[:,'Crédit'] = self.df.loc[:,'Crédit']
+		model_df.loc[:,'Ecriture comptable / Compte'] = self.df.loc[:,'Numéro de compte']
+		model_df.loc[:,'Ecriture comptable / libellé'] = self.df.loc[:,'Libellé du compte']
+		model_df.loc[:,'Ecriture comptable / Débit'] = self.df.loc[:,'Débit']
+		model_df.loc[:,'Ecriture comptable / Crédit'] = self.df.loc[:,'Crédit']
 
 		# récupère les valeurs de la clé analytique et stock dans dict_analitique key = rows
 		dict_analitique={}
@@ -96,7 +97,7 @@ class CSV_OD(CSV) :
 		# transforme les '' en ""
 			my_updated_string = re.sub(r"'", '', str(values))
 
-			model_df.at[key,'Analitique']=my_updated_string
+			model_df.at[key,'Ecriture comptable / Lignes analytiques / Compte analytique']=my_updated_string
 
 		
 
