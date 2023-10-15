@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 import json 
 import re
+import lxml
 
 def removedoc(document):
 	print("carentre")
@@ -9,16 +10,25 @@ def removedoc(document):
 
 class CSV :
 	tag = "generic"
-	def __init__(self, df) :
+	def __init__(self,df, upload) :
+		self.upload = upload
 		self.df = df
 	def process(self):
 		pass
 	def describe(self):
-		print(self.df)
+		return self.df
 	def model(self):
 		pass
 	def export(self):
 		return self.df.to_csv(index=False, sep=';').encode('latin-1')
+	def name(self):
+		return re.sub(r'.csv','',str(self.upload.name))
+
+class CSV_XML(CSV) :
+	def export(self) :
+		self.df.columns=[col.replace(" ","_") for col in self.df.columns]
+		return self.df.to_xml(index=False)
+
 
 class CSV_OD(CSV) :
 	# definit le modele du document final
@@ -43,6 +53,7 @@ class CSV_OD(CSV) :
 
     # transforme le dataframe reçu en copiant les valeurs dans le dataframe model
 	def process(self,input) :
+		print(self.df)
 		# upload json
 		with open("data.json","r") as data:
    			jsonData = json.load(data)

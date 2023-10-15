@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import helpers as helpers
+import re
+# import streamlit_authenticator as stauth
 
 
 st.markdown("# Convertisseur CSV  ")
@@ -15,10 +17,10 @@ if upload is not None:
 
 
 
-options=["Import des comptes"]
+options=["","Import des comptes","Export to XML"]
 
 option = st.selectbox(
-    'Which csv are you uploading?',
+    'Which csv are you uploading ?',
      options)
 
 
@@ -28,7 +30,7 @@ if upload is not None :
 		
 		try :
 
-			csv= helpers.CSV_OD(upload_df)
+			csv= helpers.CSV_OD(upload_df, upload)
 			document = st.text_input("numero de document")
 			model = csv.process(document)
 			st.write(model)
@@ -47,6 +49,19 @@ if upload is not None :
 		except Exception as e :
 			print(e)
 			st.warning(f"mauvais format de csv (erreur : {e}), veuillez vous référez au modèle ci-dessous")
-			st.write(helpers.CSV_OD(upload_df).model())
-
+			st.write(helpers.CSV_OD(upload_df,upload).model())
+	elif option=='Export to XML' :
+		try:
+			csv=helpers.CSV_XML(upload_df, upload)
+			st.write(csv)
+			st.download_button(
+				"Press to Download",
+				   csv.export(),
+				   f"{csv.name()}.xml",
+				   "xml",
+				   key='download-csv', 
+				)
+		except Exception as e:
+			st.warning(f"erreur : {e}), veuillez contacter le webmaster")
+			raise e
 		
