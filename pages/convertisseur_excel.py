@@ -2,6 +2,10 @@ import streamlit as st
 import pandas as pd
 import helpers as helpers
 import re
+import pyarrow as pa
+from xml.etree.ElementTree import Element, SubElement, ElementTree, tostring
+import openpyxl
+import xml.dom.minidom
 
 st.set_page_config(
 	page_title="Convertisseur Excel"
@@ -12,8 +16,10 @@ upload = st.file_uploader("upload file", type={"xlsx"})
 
 if upload is not None:
 	upload_df = pd.read_excel(upload)
-	upload_df.sort_values(by=['concatenation interne'])
-	st.write(upload_df)
+
+	excelDf = helpers.EXCEL_XML(upload_df,upload)
+	excelDf.preprocess()
+	st.write(excelDf.describe())
 
 
 options=["","Export to XML"]
@@ -26,16 +32,17 @@ option = st.selectbox(
 
 if upload is not None :
 	if option=='Export to XML' :
-		try:
-			csv=helpers.CSV_XML(upload_df, upload)
-			st.write(csv)
-			st.download_button(
-				"Press to Download",
-				   csv.export(),
-				   f"{csv.name()}.xml",
-				   "xml",
-				   key='download-csv', 
-				)
-		except Exception as e:
-			st.warning(f"erreur : {e}), veuillez contacter le webmaster")
-			raise e
+		date = st.date_input("date")
+		if date :  
+			excelDf.convert_to_xml(date)
+			try:
+				st.download_button(
+				"Télécharger le fichier XML",
+				excelDf.export(),
+				f"{excelDf.name()}.xml",
+				"xml",
+				key='download-xml'
+					)
+			except Exception as e:
+				st.warning(f"erreur : {e}), veuillez contacter le webmaster")
+				raise e

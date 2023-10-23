@@ -3,6 +3,9 @@ import streamlit as st
 import json 
 import re
 import lxml
+from xml.etree.ElementTree import Element, SubElement, ElementTree, tostring
+import openpyxl
+import xml.dom.minidom
 
 def removedoc(document):
 	document=None
@@ -117,12 +120,121 @@ class EXCEL :
 		return self.df
 	def model(self):
 		pass
-	def export(self):
-		return self.df.to_csv(index=False, sep=';').encode('latin-1')
 	def name(self):
-		return re.sub(r'.csv','',str(self.upload.name))
+		return re.sub(r'.xlsx','',str(self.upload.name))
+
 
 class EXCEL_XML(EXCEL):
-	def process(self):
+	def model(self):
+		d = {'InternalNumber':[""],
+		 'ContractNumber':[""],
+		 'Date':[""],
+		 'NumberOfHours':[""],
+		 'PaymentCode':[""],
+		 'CostCenterCode':[""],
+		 }
+		df = pd.DataFrame(data=d, index=[0])
+		return df
+	def preprocess(self):
+		df=self.df
+		self.df['InternalNumber'] = df['InternalNumber'].astype(str)
+		self.df['ContractNumber'] = df['ContractNumber'].astype(str)
+		self.df['Date'] = df['Date'].astype(str)
+		self.df['NumberOfHours'] = pd.to_numeric(df['NumberOfHours'], errors='coerce')
+		self.df=df.dropna()
+		return self.df
+	
 	def export(self):
-		return self.df.to_xml(index=False)
+		decode_xml = tostring(self.root, encoding="utf-8").decode()
+		xml_fromString = xml.dom.minidom.parseString(decode_xml)
+		pretty_xml = xml_fromString.toprettyxml()
+		return pretty_xml
+
+	def convert_to_xml(self, input):
+	# Créer un élément racine XML
+		root = Element("RegisterTime")
+		creation_date = SubElement(root, "CreationDate")
+		creation_date.text = str(input)
+
+		# Créer un élément "ContractEntries"
+		contract_entries = SubElement(root, "ContractEntries")
+
+		allStudentsObjects={}
+
+		# Parcourir les données du DataFrame
+
+		for index, row in self.df.iterrows():
+			key = str(row['InternalNumber'])+str(row['ContractNumber'])
+
+			if key not in allStudentsObjects:
+				allStudentsObjects[key] = {
+				"internal_number": row['InternalNumber'],
+				"contract_number": row['ContractNumber'],
+				"presta": {
+				    row['Date']: {
+				        "date": [row['Date']],
+				        "payment_code": [row['PaymentCode']],
+				        "number_of_hours": [row['NumberOfHours']],
+				        "cost_center_code": [row['CostCenterCode']]
+				    }
+				},
+				"salary_code": "0000",
+				}
+			else:
+				if row['Date'] not in allStudentsObjects[key]['presta']:
+					allStudentsObjects[key]['presta'][row['Date']] = {
+					"date": [row['Date']],
+					"payment_code": [row['PaymentCode']],
+					"number_of_hours": [row['NumberOfHours']],
+					"cost_center_code": [row['CostCenterCode']]
+					}
+				else:
+					allStudentsObjects[key]['presta'][row['Date']]['payment_code'].append(row['PaymentCode'])
+					allStudentsObjects[key]['presta'][row['Date']]['number_of_hours'].append(row['NumberOfHours'])
+					allStudentsObjects[key]['presta'][row['Date']]['cost_center_code'].append(row['CostCenterCode'])
+
+
+		
+		for key, student_data in allStudentsObjects.items():
+			contract_entry = SubElement(contract_entries, "ContractEntry")
+
+			# Create the ContractLogicalKey element
+			contract_logical_key = SubElement(contract_entry, "ContractLogicalKey")
+			office_code = SubElement(contract_logical_key, "OfficeCode")
+			office_code.text = "999"
+			functional_number = SubElement(contract_logical_key, "FunctionalNumber")
+			functional_number.text = "99999"
+			internal_number_element = SubElement(contract_logical_key, "InternalNumber")
+			internal_number_element.text = str(student_data["internal_number"])
+			contract_number_element = SubElement(contract_logical_key, "ContractNumber")
+			contract_number_element.text = str(student_data["contract_number"])
+
+			date_entries = SubElement(contract_entry, "DateEntries")
+
+			for date, presta_data in student_data["presta"].items():
+				date_entry = SubElement(date_entries, "DateEntry")
+				date_element = SubElement(date_entry, "Date")
+				date_element.text = date
+
+				calendars = SubElement(date_entry, "Calendars")
+				for index in range(len(presta_data['payment_code'])) :
+					calendar = SubElement(calendars, "Calendar")
+					combined_salary_code = SubElement(calendar, "CombinedSalaryCode")
+					salary_code_element = SubElement(combined_salary_code, "SalaryCode")
+					salary_code_element.text = "0000"
+					payment_code_element = SubElement(calendar, "PaymentCode")
+					payment_code_element.text = str(presta_data["payment_code"][index])
+					number_of_hours_element = SubElement(calendar, "NumberOfHours")
+					number_of_hours_element.text = str(presta_data["number_of_hours"][index])
+
+			cost_centers = SubElement(contract_entry, "CostCenters")
+			for date, presta_data in student_data["presta"].items():
+				for index in range(len(presta_data['payment_code'])) :
+					cost_center = SubElement(cost_centers, "CostCenter")
+					cost_center_code = SubElement(cost_center, "CostCenterCode")
+					cost_center_code.text=str(presta_data["cost_center_code"][index])
+					number_of_hours_element = SubElement(cost_center, "NumberOfHours")
+					number_of_hours_element.text = str(presta_data["number_of_hours"][index])
+
+		self.root = root
+		return root
