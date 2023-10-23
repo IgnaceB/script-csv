@@ -5,7 +5,6 @@ import re
 import lxml
 
 def removedoc(document):
-	print("carentre")
 	document=None
 
 class CSV :
@@ -28,7 +27,6 @@ class CSV_XML(CSV) :
 	def export(self) :
 		self.df.columns=[col.replace(" ","_") for col in self.df.columns]
 		return self.df.to_xml(index=False)
-
 
 class CSV_OD(CSV) :
 	# definit le modele du document final
@@ -54,7 +52,6 @@ class CSV_OD(CSV) :
 
     # transforme le dataframe reçu en copiant les valeurs dans le dataframe model
 	def process(self,input) :
-		print(self.df)
 		# upload json
 		with open("data.json","r") as data:
    			jsonData = json.load(data)
@@ -64,8 +61,8 @@ class CSV_OD(CSV) :
 		for rows in range(len(self.df.index)):
 			model_df.loc[rows]=[None,None,None,None,None,None,None,None]
 		
-		# définis les champs unique de la première ligne
-		model_df.loc[0] = [input,self.df.at[0,'Date de calcul'],self.df.at[0,'Numéro de référence'],None,None,None,None,None]
+		# définis les champs unique de la première ligne 
+		model_df.loc[0] = [input,self.df.at[0,'Numéro de référence'],self.df.at[0,'Date de calcul'],None,None,None,None,None]
 		
 		# définis les champs copié/collé des autres lignes
 		model_df.loc[:,'Ecriture comptable / Compte'] = self.df.loc[:,'Numéro de compte']
@@ -81,7 +78,7 @@ class CSV_OD(CSV) :
 				cell_value = str(self.df.at[rows,'Analitique'])
 				list_analitique = re.findall(r'[^,\s]+',cell_value)
 				dict_analitique[rows] = list_analitique
-			# print(dict_analitique)
+	
 				
 		transformed_dict={}
 		
@@ -109,3 +106,23 @@ class CSV_OD(CSV) :
 		
 
 	
+class EXCEL :
+	tag = "generic"
+	def __init__(self,df, upload) :
+		self.upload = upload
+		self.df = df
+	def process(self):
+		pass
+	def describe(self):
+		return self.df
+	def model(self):
+		pass
+	def export(self):
+		return self.df.to_csv(index=False, sep=';').encode('latin-1')
+	def name(self):
+		return re.sub(r'.csv','',str(self.upload.name))
+
+class EXCEL_XML(EXCEL):
+	def process(self):
+	def export(self):
+		return self.df.to_xml(index=False)

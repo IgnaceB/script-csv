@@ -2,19 +2,20 @@ import streamlit as st
 import pandas as pd
 import helpers as helpers
 import re
+# import openpyxl
 # import streamlit_authenticator as stauth
 
 
-st.markdown("# Convertisseur CSV  ")
-st.sidebar.markdown("# Convertisseur CSV ")
-
+st.set_page_config(
+	page_title="Convertisseur CSV"
+	)
 
 upload = st.file_uploader("upload file", type={"csv"})
+
 
 if upload is not None:
 	upload_df = pd.read_csv(upload, sep=';' , encoding='latin-1')
 	st.write(upload_df)
-
 
 
 options=["","Import des comptes","Export to XML"]
@@ -32,11 +33,12 @@ if upload is not None :
 
 			csv= helpers.CSV_OD(upload_df, upload)
 			document = st.text_input("numero de document")
-			model = csv.process(document)
-			st.write(model)
+			# model = csv.process(document)
+			# st.write(model)
 		
 			if document :
-				
+				model = csv.process(document)
+				st.write(model)
 				st.download_button(
 				   "Press to Download",
 				   csv.export(),
