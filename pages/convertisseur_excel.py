@@ -32,7 +32,7 @@ option = st.selectbox(
 
 if upload is not None :
 	if option=='Export to XML' :
-		date = st.date_input("date")
+		date = st.date_input("date de création du document")
 		if date :  
 			excelDf.convert_to_xml(date)
 			try:

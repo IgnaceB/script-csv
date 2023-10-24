@@ -18,7 +18,9 @@ if upload is not None:
 	st.write(upload_df)
 
 
-options=["","Import des comptes","Export to XML"]
+# options=["","Import des comptes","Export to XML"]
+options=["","Import des comptes"]
+
 
 option = st.selectbox(
     'Which csv are you uploading ?',

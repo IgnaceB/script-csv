@@ -138,7 +138,7 @@ class EXCEL_XML(EXCEL):
 	def preprocess(self):
 		df=self.df
 		self.df['InternalNumber'] = df['InternalNumber'].astype(str)
-		self.df['ContractNumber'] = df['ContractNumber'].astype(str)
+		self.df['ContractNumber'] = df['ContractNumber']
 		self.df['Date'] = df['Date'].astype(str)
 		self.df['NumberOfHours'] = pd.to_numeric(df['NumberOfHours'], errors='coerce')
 		self.df=df.dropna()
@@ -169,7 +169,7 @@ class EXCEL_XML(EXCEL):
 			if key not in allStudentsObjects:
 				allStudentsObjects[key] = {
 				"internal_number": row['InternalNumber'],
-				"contract_number": row['ContractNumber'],
+				"contract_number": int(row['ContractNumber']),
 				"presta": {
 				    row['Date']: {
 				        "date": [row['Date']],
@@ -227,8 +227,7 @@ class EXCEL_XML(EXCEL):
 					number_of_hours_element = SubElement(calendar, "NumberOfHours")
 					number_of_hours_element.text = str(presta_data["number_of_hours"][index])
 
-			cost_centers = SubElement(contract_entry, "CostCenters")
-			for date, presta_data in student_data["presta"].items():
+				cost_centers = SubElement(date_entry, "CostCenters")
 				for index in range(len(presta_data['payment_code'])) :
 					cost_center = SubElement(cost_centers, "CostCenter")
 					cost_center_code = SubElement(cost_center, "CostCenterCode")
