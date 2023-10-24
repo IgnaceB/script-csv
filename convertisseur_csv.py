@@ -7,9 +7,10 @@ import re
 
 
 st.set_page_config(
-	page_title="Convertisseur CSV"
+	page_title="Convertisseur CSV",
+	page_icon=":page_facing_up:"
 	)
-
+st.title(":page_facing_up: Convertisseur CSV")
 upload = st.file_uploader("upload file", type={"csv"})
 
 

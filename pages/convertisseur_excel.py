@@ -8,8 +8,10 @@ import openpyxl
 import xml.dom.minidom
 
 st.set_page_config(
-	page_title="Convertisseur Excel"
+	page_title="Convertisseur Excel",
+	page_icon=":green_book:"
 	)
+st.title(":green_book: Convertisseur Excel")
 
 upload = st.file_uploader("upload file", type={"xlsx"})
 
