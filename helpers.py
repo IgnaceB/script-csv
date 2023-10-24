@@ -61,44 +61,47 @@ class CSV_OD(CSV) :
 		model_df=self.model()
 
 		# remplit le model avec le nombre de colonnes du dataframe 
-		for rows in range(len(self.df.index)):
-			model_df.loc[rows]=[None,None,None,None,None,None,None,None]
-		
+		# for rows in range(len(self.df.index)):
+		# 	model_df.loc[rows]=[None,None,None,None,None,None,None,None]
+
 		# définis les champs unique de la première ligne 
 		model_df.loc[0] = [input,self.df.at[0,'Numéro de référence'],self.df.at[0,'Date de calcul'],None,None,None,None,None]
 		
 		# définis les champs copié/collé des autres lignes
-		model_df.loc[:,'Ecriture comptable / Compte'] = self.df.loc[:,'Numéro de compte']
-		model_df.loc[:,'Ecriture comptable / libellé'] = self.df.loc[:,'Libellé du compte']
-		model_df.loc[:,'Ecriture comptable / Débit'] = self.df.loc[:,'Débit']
-		model_df.loc[:,'Ecriture comptable / Crédit'] = self.df.loc[:,'Crédit']
+		# model_df['Ecriture comptable / Compte'] = self.df['Numéro de compte']
+		# model_df['Ecriture comptable / libellé'] = self.df['Libellé du compte']
+		# model_df['Ecriture comptable / Débit'] = self.df['Débit']
+		# model_df['Ecriture comptable / Crédit'] = self.df['Crédit']
 
 		# récupère les valeurs de la clé analytique et stock dans dict_analitique key = rows
 		dict_analitique={}
 		for rows in range(len(self.df.index)):
-		
+			model_df.at[rows,'Ecriture comptable / Lignes analytiques / Compte analytique']=None
 			if str(self.df.at[rows,'Analitique']) != 'nan' :
 				cell_value = str(self.df.at[rows,'Analitique'])
 				list_analitique = re.findall(r'[^,\s]+',cell_value)
 				dict_analitique[rows] = list_analitique
 	
-				
 		transformed_dict={}
-		
+
 		# transforme les valeurs avec le dictionnaire data.json et stock dans transformed_dict key=rows
 		for key, value_list in dict_analitique.items() :
 			transformed_object={f'"{self.match_element(element, jsonData)}"' : 100.00 for element in value_list }
 
 			transformed_dict[key] = transformed_object
 			
-	
+
 		# insert les valeurs dans le model sur base de key=rows du transformed_dict
 		for key, values in transformed_dict.items() :
 		# transforme les '' en ""
 			my_updated_string = re.sub(r"'", '', str(values))
 
 			model_df.at[key,'Ecriture comptable / Lignes analytiques / Compte analytique']=my_updated_string
-
+		
+		model_df['Ecriture comptable / Compte'] = self.df['Numéro de compte']
+		model_df['Ecriture comptable / libellé'] = self.df['Libellé du compte']
+		model_df['Ecriture comptable / Débit'] = self.df['Débit']
+		model_df['Ecriture comptable / Crédit'] = self.df['Crédit']
 		
 
 
