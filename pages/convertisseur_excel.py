@@ -13,7 +13,7 @@ st.set_page_config(
 	)
 st.title(":green_book: Convertisseur Excel")
 
-upload = st.file_uploader("upload file", type={"xlsx"})
+upload = st.file_uploader("upload file", type={"xlsx","xlsm"})
 
 
 # if upload is not None:
