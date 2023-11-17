@@ -176,9 +176,9 @@ class EXCEL_STUDENTS_XML(EXCEL_XML):
 			# Create the ContractLogicalKey element
 			contract_logical_key = SubElement(contract_entry, "ContractLogicalKey")
 			office_code = SubElement(contract_logical_key, "OfficeCode")
-			office_code.text = "999"
+			office_code.text = "612"
 			functional_number = SubElement(contract_logical_key, "FunctionalNumber")
-			functional_number.text = "99999"
+			functional_number.text = "164"
 			internal_number_element = SubElement(contract_logical_key, "InternalNumber")
 			internal_number_element.text = str(student_data["internal_number"])
 			contract_number_element = SubElement(contract_logical_key, "ContractNumber")
@@ -274,9 +274,9 @@ class EXCEL_EMPLOYEES_XML(EXCEL_XML):
 			# Create the ContractLogicalKey element
 			contract_logical_key = SubElement(contract_entry, "ContractLogicalKey")
 			office_code = SubElement(contract_logical_key, "OfficeCode")
-			office_code.text = "999"
+			office_code.text = "612"
 			functional_number = SubElement(contract_logical_key, "FunctionalNumber")
-			functional_number.text = "99999"
+			functional_number.text = "164"
 			internal_number_element = SubElement(contract_logical_key, "InternalNumber")
 			internal_number_element.text = str(student_data["internal_number"])
 			contract_number_element = SubElement(contract_logical_key, "ContractNumber")
