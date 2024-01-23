@@ -34,14 +34,14 @@ class CSV_XML(CSV) :
 class CSV_OD(CSV) :
 	# definit le modele du document final
 	def model(self) :
-		d = {'Numéro':[""],
-		 'Référence':[""],
+		d = {'name':[""],
+		 'ref':[""],
 		 'Date':[""],
-		 'Ecriture comptable / Compte':[""],
-		 'Ecriture comptable / libellé':[""],
-		 'Ecriture comptable / Débit':[""],
-		 'Ecriture comptable / Crédit':[""],
-		 'Ecriture comptable / Lignes analytiques / Compte analytique':[""],
+		 'line_ids/account_id':[""],
+		 'line_ids/name':[""],
+		 'line_ids/debit':[""],
+		 'line_ids/credit':[""],
+		 'line_ids/analytic_distribution':[""],
 
 		 }
 		df = pd.DataFrame(data=d, index=[0])
@@ -67,7 +67,7 @@ class CSV_OD(CSV) :
 		# récupère les valeurs de la clé analytique et stock dans dict_analitique key = rows
 		dict_analitique={}
 		for rows in range(len(self.df.index)):
-			model_df.at[rows,'Ecriture comptable / Lignes analytiques / Compte analytique']=None
+			model_df.at[rows,'line_ids/analytic_distribution']=None
 			if str(self.df.at[rows,'Analitique']) != 'nan' :
 				cell_value = str(self.df.at[rows,'Analitique'])
 				list_analitique = re.findall(r'[^,\s]+',cell_value)
@@ -79,13 +79,14 @@ class CSV_OD(CSV) :
 		# transforme les '' en ""
 			my_updated_string = re.sub(r"'", '', str(values))
 
-			model_df.at[key,'Ecriture comptable / Lignes analytiques / Compte analytique']=my_updated_string
+			model_df.at[key,'line_ids/analytic_distribution']=my_updated_string
 		
 		# définis les champs copié/collé des autres lignes	
-		model_df['Ecriture comptable / Compte'] = self.df['Numéro de compte']
-		model_df['Ecriture comptable / libellé'] = self.df['Libellé du compte']
-		model_df['Ecriture comptable / Débit'] = self.df['Débit']
-		model_df['Ecriture comptable / Crédit'] = self.df['Crédit']
+		model_df['line_ids/account_id'] = self.df['Numéro de compte']
+		model_df['line_ids/name'] = self.df['Libellé du compte']
+
+		model_df['line_ids/debit'] = self.df['Débit'].replace(',','.', regex=True).astype(float)
+		model_df['line_ids/credit'] = self.df['Crédit'].replace(',','.', regex=True).astype(float)
 		
 
 
